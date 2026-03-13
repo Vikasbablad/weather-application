@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Weather App</title>
+    <link rel="stylesheet" href="weather.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Weather Application</h1>
+
+      <input type="text" id="city" placeholder="Enter city name" />
+      <button onclick="getWeather()">Search</button>
+      <button onclick="getLocation()">Use My Location</button>
+
+      <div id="result"></div>
+
+      <div>
+        <label for="unit">Unit:</label>
+        <select id="unit" onchange="changeUnit()">
+          <option value="metric">Celsius</option>
+          <option value="imperial">Fahrenheit</option>
+        </select>
+      </div>
+    </div>
+
+    <script>
+      // API key and default units
+      let apiKey = "d195adc68aa440161bf9f616133ae43a";
+      let units = "metric"; // default Celsius
+
+      // Fetch weather by city
+      async function getWeather() {
+        const city = document.getElementById("city").value;
+        if (city.trim() === "") {
+          alert("Enter a city");
+          return;
+        }
+
+        document.getElementById("result").innerHTML = "Loading...";
+
+        try {
+          const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=${units}`;
+          const response = await fetch(url);
+          const data = await response.json();
+
+          if (data.cod == "404") {
+            document.getElementById("result").innerHTML = "City not found";
+            return;
+          }
+
+          showWeather(data);
+        } catch (error) {
+          document.getElementById("result").innerHTML = "Error fetching data";
+          console.error(error);
+        }
+      }
+
+      // Display weather in horizontal boxes
+      function showWeather(data) {
+        const weatherMain = data.weather[0].main;
+        const icon = data.weather[0].icon;
+        const iconUrl = `https://openweathermap.org/img/wn/${icon}@2x.png`;
+
+        // Grid container for all boxes
+        document.getElementById("result").innerHTML = `
+        <div class="result-container">
+            <div class="result-box">
+                <h2>${data.name}</h2>
+            </div>
+            <div class="result-box">
+                <img src="${iconUrl}" alt="weather icon">
+            </div>
+            <div class="result-box">
+                <p>Temperature: ${data.main.temp}°${units == "metric" ? "C" : "F"}</p>
+            </div>
+            <div class="result-box">
+                <p>Feels Like: ${data.main.feels_like}°${units == "metric" ? "C" : "F"}</p>
+            </div>
+            <div class="result-box">
+                <p>Humidity: ${data.main.humidity}%</p>
+            </div>
+            <div class="result-box">
+                <p>Wind: ${data.wind.speed} ${units == "metric" ? "km/h" : "mph"}</p>
+            </div>
+            <div class="result-box">
+                <p>Condition: ${weatherMain}</p>
+            </div>
+        </div>
+    `;
+
+        changeBackground(weatherMain);
+      }
+
+      // Change page background based on weather
+      function changeBackground(weather) {
+        if (weather.includes("Rain") || weather.includes("Drizzle")) {
+          document.body.style.background = "#7ec0ee"; // blue
+        } else if (weather.includes("Cloud")) {
+          document.body.style.background = "#d3d3d3"; // gray
+        } else if (weather.includes("Clear")) {
+          document.body.style.background = "#f7e67d"; // yellow
+        } else if (weather.includes("Snow")) {
+          document.body.style.background = "#ffffff"; // white
+        } else {
+          document.body.style.background = "#87CEEB"; // default sky
+        }
+      }
+
+      // Get weather using user's current location
+      function getLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(async (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            document.getElementById("result").innerHTML = "Loading...";
+
+            try {
+              const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${units}`;
+              const response = await fetch(url);
+              const data = await response.json();
+              showWeather(data);
+            } catch (error) {
+              document.getElementById("result").innerHTML =
+                "Error fetching data";
+              console.error(error);
+            }
+          });
+        } else {
+          alert("Geolocation not supported by your browser");
+        }
+      }
+
+      // Change temperature unit (Celsius/Fahrenheit)
+      function changeUnit() {
+        units = document.getElementById("unit").value;
+        const city = document.getElementById("city").value;
+        if (city) getWeather(); // reload weather in new unit
+      }
+    </script>
+  </body>
+</html>

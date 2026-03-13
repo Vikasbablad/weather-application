@@ -1,0 +1,85 @@
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  margin: 0;
+  transition: background 0.5s;
+  background: #87ceeb; /* default sky blue */
+}
+
+.container {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 30px 20px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  width: 95%;
+  max-width: 900px;
+  margin-top: 20px;
+}
+
+input[type="text"],
+button,
+select {
+  padding: 10px;
+  margin: 5px 2px;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+button {
+  border: none;
+  background-color: #4caf50;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+/* Horizontal grid layout: 3 cards per row */
+.result-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.result-box {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.result-box img {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 900px) {
+  .result-container {
+    grid-template-columns: repeat(
+      2,
+      1fr
+    ); /* 2 boxes per row on medium screens */
+  }
+}
+
+@media (max-width: 600px) {
+  .result-container {
+    grid-template-columns: 1fr; /* 1 box per row on mobile */
+  }
+
+  input,
+  button,
+  select {
+    width: 95%;
+  }
+}
